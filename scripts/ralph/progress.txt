@@ -60,6 +60,20 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - Manual browser verification needed (dev-browser unavailable)
 ---
 
+## 2026-03-23 - US-005
+- Created EditTaskModal component at app/app/components/EditTaskModal.tsx
+- Modal overlays the board with a dark backdrop; clicking outside dismisses it
+- All fields (title, description, priority) pre-populated from existing task data
+- [SAVE] button / Enter persists changes via updateTask hook; [CANCEL] / Escape discards
+- Wired handleEdit in KanbanBoard to set editingTask state; modal rendered at fragment root level
+- Files changed: app/app/components/EditTaskModal.tsx (new), app/app/components/KanbanBoard.tsx
+- **Learnings for future iterations:**
+  - EditTaskModal rendered at the KanbanBoard fragment root (not inside column loop) to avoid z-index/overflow clipping
+  - Modal backdrop uses `onClick` on the outer div with `e.target === e.currentTarget` guard to close on outside click
+  - `updateTask` in useTaskStore accepts `Partial<Omit<Task, "id" | "createdAt">>` — safe to pass subset of fields
+  - Manual browser verification needed (dev-browser unavailable)
+---
+
 ## 2026-03-23 - US-002
 - Created Task TypeScript type in app/app/types/task.ts (id, title, description?, priority, status, createdAt)
 - Created useTaskStore custom hook in app/app/hooks/useTaskStore.ts with localStorage persistence
