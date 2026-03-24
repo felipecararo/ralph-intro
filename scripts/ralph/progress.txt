@@ -13,6 +13,9 @@ Started: Mon Mar 23 19:10:26 PDT 2026
 - Task types defined in app/app/types/task.ts; useTaskStore hook in app/app/hooks/useTaskStore.ts
 - Use crypto.randomUUID() for generating task IDs (available in modern browsers and Node 18+)
 - localStorage key for tasks: "task_os_tasks"
+- @dnd-kit/core is installed; DndContext wraps the board; useDroppable per column; useDraggable per card
+- Extract DroppableColumn as a separate component (not inline in .map()) because hooks can't be called in callbacks
+- DragOverlay renders the drag ghost; pass task data via `data` prop on useDraggable
 
 ## 2026-03-23 - US-001
 - Created Next.js 16 app at /workspace/app with TypeScript strict mode
@@ -97,6 +100,23 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - useEffect keyboard handler pattern: add listener when `confirmingDelete` is true, remove on cleanup
   - Confirmation replaces the entire action button row (conditional render) for clean UX
   - Manual browser verification needed (dev-browser unavailable)
+---
+
+## 2026-03-23 - US-008
+- Installed @dnd-kit/core package
+- Added useDraggable to TaskCard: card becomes draggable, shows ghost (opacity 0.5) during drag
+- Extracted DroppableColumn component (required since useDroppable hook can't be called in .map())
+- DroppableColumn uses useDroppable with column's TaskStatus as id; highlights border/bg when isOver
+- DndContext wraps board; tracks activeTask and overColumnId state; moves task on DragEnd
+- DragOverlay renders a terminal-styled ghost card during drag
+- Task status updates immediately on drop and persists to localStorage via moveTask
+- Typecheck passes; manual browser verification needed (dev-browser unavailable)
+- Files changed: app/app/components/KanbanBoard.tsx, app/app/components/TaskCard.tsx, app/package.json, app/package-lock.json
+- **Learnings for future iterations:**
+  - useDroppable/useDraggable hooks CANNOT be called inside .map() — extract into named components
+  - Pass task data via `data` prop in useDraggable: `useDraggable({ id, data: { task } })` then access via `active.data.current?.task`
+  - DragOverlay must be inside DndContext; renders a portal-like overlay above all content
+  - Column highlight: track overColumnId in DndContext onDragOver, compare to each column's id
 ---
 
 ## 2026-03-23 - US-007
