@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 import type { Task, TaskStatus } from "../types/task";
 
 const PRIORITY_COLORS: Record<Task["priority"], string> = {
@@ -24,6 +26,11 @@ export default function TaskCard({ task, onMove, onEdit, onDelete }: TaskCardPro
   const canMoveRight = currentIdx < STATUS_ORDER.length - 1;
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: { task },
+  });
+
   useEffect(() => {
     if (!confirmingDelete) return;
     const handler = (e: KeyboardEvent) => {
@@ -37,8 +44,20 @@ export default function TaskCard({ task, onMove, onEdit, onDelete }: TaskCardPro
     return () => window.removeEventListener("keydown", handler);
   }, [confirmingDelete, onDelete, task.id]);
 
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isDragging ? "grabbing" : "grab",
+  };
+
   return (
-    <div className="bg-[#0f1a0f] border border-[#00ff4133] rounded-sm p-3 text-xs text-[#00ff41]">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="bg-[#0f1a0f] border border-[#00ff4133] rounded-sm p-3 text-xs text-[#00ff41]"
+    >
       {/* Priority badge + title row */}
       <div className="flex items-start gap-2 mb-1">
         <span
