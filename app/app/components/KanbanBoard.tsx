@@ -5,6 +5,7 @@ import { useTaskStore } from "../hooks/useTaskStore";
 import type { Task, TaskStatus, TaskPriority } from "../types/task";
 import TaskCard from "./TaskCard";
 import AddTaskForm from "./AddTaskForm";
+import EditTaskModal from "./EditTaskModal";
 
 const COLUMNS: { id: TaskStatus; label: string }[] = [
   { id: "TODO", label: "[ TO_DO ]" },
@@ -13,11 +14,15 @@ const COLUMNS: { id: TaskStatus; label: string }[] = [
 ];
 
 export default function KanbanBoard() {
-  const { tasksByStatus, createTask, moveTask, deleteTask } = useTaskStore();
+  const { tasksByStatus, createTask, updateTask, moveTask, deleteTask } = useTaskStore();
   const [addingToColumn, setAddingToColumn] = useState<TaskStatus | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  // Placeholder handler — edit modal implemented in US-005
-  const handleEdit = (_task: Task) => {};
+  const handleEdit = (task: Task) => setEditingTask(task);
+  const handleEditSave = (id: string, updates: { title: string; description?: string; priority: TaskPriority }) => {
+    updateTask(id, updates);
+    setEditingTask(null);
+  };
   const handleDelete = (id: string) => deleteTask(id);
 
   const handleAddSubmit = (data: { title: string; description?: string; priority: TaskPriority; status: TaskStatus }) => {
@@ -26,6 +31,14 @@ export default function KanbanBoard() {
   };
 
   return (
+    <>
+    {editingTask && (
+      <EditTaskModal
+        task={editingTask}
+        onSave={handleEditSave}
+        onCancel={() => setEditingTask(null)}
+      />
+    )}
     <div className="flex flex-1 gap-4 p-4 overflow-hidden">
       {COLUMNS.map((col) => {
         const colTasks = tasksByStatus(col.id);
@@ -84,5 +97,6 @@ export default function KanbanBoard() {
         );
       })}
     </div>
+    </>
   );
 }
