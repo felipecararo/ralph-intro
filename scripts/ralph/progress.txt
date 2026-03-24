@@ -7,9 +7,12 @@ Started: Mon Mar 23 19:10:26 PDT 2026
 - TailwindCSS v4 token syntax: `--color-terminal: #0a0a0a` in @theme, then use as `bg-[#0a0a0a]` or via CSS vars
 - All interactive components (useState, useEffect, onClick, localStorage) must have "use client" directive
 - App is at /workspace/app — run `cd /workspace/app && npx tsc --noEmit` for typecheck
-- Commit requires `-c gpg.format=openpgp -c commit.gpgsign=false` flags to bypass GPG signing
+- Commit requires `-c gpg.format=openpgp -c commit.gpgsign=false` flags to bypass GPG signing (place flags BEFORE the subcommand: `git -c ... commit`)
 - JetBrains Mono loaded via next/font/google as JetBrains_Mono (underscore in import name)
 - dev-browser skill is NOT available; note "manual browser verification needed" in progress
+- Task types defined in app/app/types/task.ts; useTaskStore hook in app/app/hooks/useTaskStore.ts
+- Use crypto.randomUUID() for generating task IDs (available in modern browsers and Node 18+)
+- localStorage key for tasks: "task_os_tasks"
 
 ## 2026-03-23 - US-001
 - Created Next.js 16 app at /workspace/app with TypeScript strict mode
@@ -26,4 +29,16 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - Next.js 16 app router: pages are Server Components by default; add "use client" for any interactivity
   - GPG signing fails — always use `-c gpg.format=openpgp -c commit.gpgsign=false` in git commit
   - dev-browser MCP tool is not available in this environment
+---
+
+## 2026-03-23 - US-002
+- Created Task TypeScript type in app/app/types/task.ts (id, title, description?, priority, status, createdAt)
+- Created useTaskStore custom hook in app/app/hooks/useTaskStore.ts with localStorage persistence
+- Updated KanbanBoard to use tasksByStatus() from hook; shows empty state or tasks per column
+- Files changed: app/app/types/task.ts (new), app/app/hooks/useTaskStore.ts (new), app/app/components/KanbanBoard.tsx
+- **Learnings for future iterations:**
+  - git -c flags must come BEFORE the subcommand (`git -c ... commit`), not after (`git commit -c ...`)
+  - useTaskStore hook exposes createTask, updateTask, deleteTask, moveTask — these are ready for US-003 through US-007
+  - tasksByStatus() is a derived function, not cached state — call it per render (fine for small task lists)
+  - Manual browser verification needed (dev-browser unavailable)
 ---
