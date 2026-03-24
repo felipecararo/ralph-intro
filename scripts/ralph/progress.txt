@@ -85,3 +85,16 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - tasksByStatus() is a derived function, not cached state — call it per render (fine for small task lists)
   - Manual browser verification needed (dev-browser unavailable)
 ---
+
+## 2026-03-23 - US-006
+- Added inline delete confirmation to TaskCard component
+- [DEL] button now sets local `confirmingDelete` state instead of calling onDelete directly
+- Confirmation UI shows '> CONFIRM DELETE? [Y/N]_' with [Y] and [N] buttons
+- Keyboard listeners (Y, N, Escape) attached to window when confirmation is active, cleaned up on dismiss
+- Files changed: app/app/components/TaskCard.tsx
+- **Learnings for future iterations:**
+  - Inline confirmation state kept local in TaskCard (not hoisted to KanbanBoard) — simpler and self-contained
+  - useEffect keyboard handler pattern: add listener when `confirmingDelete` is true, remove on cleanup
+  - Confirmation replaces the entire action button row (conditional render) for clean UX
+  - Manual browser verification needed (dev-browser unavailable)
+---
