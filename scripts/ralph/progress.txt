@@ -98,3 +98,16 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - Confirmation replaces the entire action button row (conditional render) for clean UX
   - Manual browser verification needed (dev-browser unavailable)
 ---
+
+## 2026-03-23 - US-007
+- Move task functionality was already fully implemented as part of US-003 (TaskCard) and US-002 (useTaskStore)
+- TaskCard: `canMoveLeft` / `canMoveRight` computed from STATUS_ORDER index; [<<]/[>>] conditionally rendered
+- KanbanBoard: `onMove={moveTask}` wired to TaskCard props
+- useTaskStore: `moveTask(id, status)` updates task status and persists to localStorage
+- Typecheck passes with no errors
+- Files changed: none (functionality already present); prd.json updated
+- **Learnings for future iterations:**
+  - US-007 was implemented implicitly during US-003 — always verify prior implementations before re-doing work
+  - STATUS_ORDER = ["TODO", "IN_PROGRESS", "DONE"] is the canonical column order used for move logic
+  - Manual browser verification needed (dev-browser unavailable)
+---
