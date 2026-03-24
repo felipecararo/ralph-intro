@@ -1,7 +1,8 @@
 "use client";
 
 import { useTaskStore } from "../hooks/useTaskStore";
-import type { TaskStatus } from "../types/task";
+import type { Task, TaskStatus } from "../types/task";
+import TaskCard from "./TaskCard";
 
 const COLUMNS: { id: TaskStatus; label: string }[] = [
   { id: "TODO", label: "[ TO_DO ]" },
@@ -10,7 +11,11 @@ const COLUMNS: { id: TaskStatus; label: string }[] = [
 ];
 
 export default function KanbanBoard() {
-  const { tasksByStatus } = useTaskStore();
+  const { tasksByStatus, moveTask, deleteTask } = useTaskStore();
+
+  // Placeholder handlers — edit/delete modals implemented in later stories
+  const handleEdit = (_task: Task) => {};
+  const handleDelete = (id: string) => deleteTask(id);
 
   return (
     <div className="flex flex-1 gap-4 p-4 overflow-hidden">
@@ -36,16 +41,13 @@ export default function KanbanBoard() {
                 </div>
               ) : (
                 colTasks.map((task) => (
-                  <div
+                  <TaskCard
                     key={task.id}
-                    className="bg-[#0f1a0f] border border-[#00ff4133] rounded-sm p-3 text-xs text-[#00ff41]"
-                  >
-                    <div className="font-bold truncate">{task.title}</div>
-                    {task.description && (
-                      <div className="text-[#005c1a] mt-1 truncate">{task.description}</div>
-                    )}
-                    <div className="mt-1 text-[#005c1a]">[{task.priority}]</div>
-                  </div>
+                    task={task}
+                    onMove={moveTask}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
                 ))
               )}
             </div>
