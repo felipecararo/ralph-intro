@@ -45,6 +45,21 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - Manual browser verification needed (dev-browser unavailable)
 ---
 
+## 2026-03-23 - US-004
+- Created AddTaskForm component at app/app/components/AddTaskForm.tsx
+- Inline terminal-style form with '> ENTER TASK:_' prompt, title input, description textarea, priority select
+- Title validation: shows '> ERROR: TITLE REQUIRED_' in red if empty on submit
+- Escape key cancels form via window keydown listener
+- Updated KanbanBoard: tracks `addingToColumn` state, shows form inline in column body, passes createTask data back
+- [+ ADD TASK] button hidden while form is open; form appears at bottom of column task list
+- Files changed: app/app/components/AddTaskForm.tsx (new), app/app/components/KanbanBoard.tsx
+- **Learnings for future iterations:**
+  - AddTaskForm uses `useRef` + `useEffect` to auto-focus the title input on mount
+  - Escape key listener added to `window` in useEffect — remember to clean up with removeEventListener
+  - `addingToColumn` state in KanbanBoard is `TaskStatus | null` — only one column can be in add mode at a time
+  - Manual browser verification needed (dev-browser unavailable)
+---
+
 ## 2026-03-23 - US-002
 - Created Task TypeScript type in app/app/types/task.ts (id, title, description?, priority, status, createdAt)
 - Created useTaskStore custom hook in app/app/hooks/useTaskStore.ts with localStorage persistence
