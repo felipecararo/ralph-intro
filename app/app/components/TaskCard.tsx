@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { Task, TaskStatus } from "../types/task";
 
 const PRIORITY_COLORS: Record<Task["priority"], string> = {
@@ -21,6 +22,20 @@ export default function TaskCard({ task, onMove, onEdit, onDelete }: TaskCardPro
   const currentIdx = STATUS_ORDER.indexOf(task.status);
   const canMoveLeft = currentIdx > 0;
   const canMoveRight = currentIdx < STATUS_ORDER.length - 1;
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  useEffect(() => {
+    if (!confirmingDelete) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "y" || e.key === "Y") {
+        onDelete(task.id);
+      } else if (e.key === "n" || e.key === "N" || e.key === "Escape") {
+        setConfirmingDelete(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [confirmingDelete, onDelete, task.id]);
 
   return (
     <div className="bg-[#0f1a0f] border border-[#00ff4133] rounded-sm p-3 text-xs text-[#00ff41]">
@@ -40,37 +55,55 @@ export default function TaskCard({ task, onMove, onEdit, onDelete }: TaskCardPro
         <div className="text-[#005c1a] mb-2 truncate">{task.description}</div>
       )}
 
-      {/* Action buttons */}
-      <div className="flex gap-1 mt-2 flex-wrap">
-        {canMoveLeft && (
+      {/* Delete confirmation or action buttons */}
+      {confirmingDelete ? (
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <span className="text-[#ff4444]">&gt; CONFIRM DELETE? [Y/N]_</span>
           <button
-            onClick={() => onMove(task.id, STATUS_ORDER[currentIdx - 1])}
+            onClick={() => onDelete(task.id)}
+            className="text-[#ff4444] hover:text-white border border-[#ff4444] px-1.5 py-0.5 transition-colors cursor-pointer"
+          >
+            [Y]
+          </button>
+          <button
+            onClick={() => setConfirmingDelete(false)}
             className="text-[#005c1a] hover:text-[#00ff41] border border-[#00ff4133] hover:border-[#00ff41] px-1.5 py-0.5 transition-colors cursor-pointer"
           >
-            [&lt;&lt;]
+            [N]
           </button>
-        )}
-        {canMoveRight && (
+        </div>
+      ) : (
+        <div className="flex gap-1 mt-2 flex-wrap">
+          {canMoveLeft && (
+            <button
+              onClick={() => onMove(task.id, STATUS_ORDER[currentIdx - 1])}
+              className="text-[#005c1a] hover:text-[#00ff41] border border-[#00ff4133] hover:border-[#00ff41] px-1.5 py-0.5 transition-colors cursor-pointer"
+            >
+              [&lt;&lt;]
+            </button>
+          )}
+          {canMoveRight && (
+            <button
+              onClick={() => onMove(task.id, STATUS_ORDER[currentIdx + 1])}
+              className="text-[#005c1a] hover:text-[#00ff41] border border-[#00ff4133] hover:border-[#00ff41] px-1.5 py-0.5 transition-colors cursor-pointer"
+            >
+              [&gt;&gt;]
+            </button>
+          )}
           <button
-            onClick={() => onMove(task.id, STATUS_ORDER[currentIdx + 1])}
+            onClick={() => onEdit(task)}
             className="text-[#005c1a] hover:text-[#00ff41] border border-[#00ff4133] hover:border-[#00ff41] px-1.5 py-0.5 transition-colors cursor-pointer"
           >
-            [&gt;&gt;]
+            [EDIT]
           </button>
-        )}
-        <button
-          onClick={() => onEdit(task)}
-          className="text-[#005c1a] hover:text-[#00ff41] border border-[#00ff4133] hover:border-[#00ff41] px-1.5 py-0.5 transition-colors cursor-pointer"
-        >
-          [EDIT]
-        </button>
-        <button
-          onClick={() => onDelete(task.id)}
-          className="text-[#005c1a] hover:text-[#ff4444] border border-[#00ff4133] hover:border-[#ff4444] px-1.5 py-0.5 transition-colors cursor-pointer"
-        >
-          [DEL]
-        </button>
-      </div>
+          <button
+            onClick={() => setConfirmingDelete(true)}
+            className="text-[#005c1a] hover:text-[#ff4444] border border-[#00ff4133] hover:border-[#ff4444] px-1.5 py-0.5 transition-colors cursor-pointer"
+          >
+            [DEL]
+          </button>
+        </div>
+      )}
     </div>
   );
 }
