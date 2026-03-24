@@ -119,6 +119,18 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - Column highlight: track overColumnId in DndContext onDragOver, compare to each column's id
 ---
 
+## 2026-03-23 - US-009
+- Added global 'N' key listener in KanbanBoard via useEffect on window keydown
+- Guard checks `e.target.tagName` — skips if INPUT or TEXTAREA to avoid triggering while typing
+- On N press, sets `addingToColumn` to "TODO", opening the inline add form in the first column
+- Keyboard legend [N] NEW  [ESC] CANCEL  [DEL] DELETE already present in TopBar (no change needed)
+- Files changed: app/app/components/KanbanBoard.tsx
+- **Learnings for future iterations:**
+  - Pattern for global keyboard shortcuts: useEffect + window.addEventListener("keydown") in the component that owns the state
+  - Guard: `const tag = (e.target as HTMLElement).tagName; if (tag === "INPUT" || tag === "TEXTAREA") return;`
+  - Manual browser verification needed (dev-browser unavailable)
+---
+
 ## 2026-03-23 - US-007
 - Move task functionality was already fully implemented as part of US-003 (TaskCard) and US-002 (useTaskStore)
 - TaskCard: `canMoveLeft` / `canMoveRight` computed from STATUS_ORDER index; [<<]/[>>] conditionally rendered
