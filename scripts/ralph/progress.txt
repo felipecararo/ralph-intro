@@ -31,6 +31,20 @@ Started: Mon Mar 23 19:10:26 PDT 2026
   - dev-browser MCP tool is not available in this environment
 ---
 
+## 2026-03-23 - US-003
+- Created TaskCard component at app/app/components/TaskCard.tsx
+- TaskCard displays: priority badge (color-coded), title, truncated description, action buttons [<<] [>>] [EDIT] [DEL]
+- Badge colors: HIGH=#ff4444, MED=#ffcc00, LOW=#00aa33
+- [<<]/[>>] buttons conditionally shown based on task status position; call moveTask from useTaskStore
+- [EDIT] and [DEL] are wired via props; DEL calls deleteTask, EDIT is a placeholder for US-005
+- Updated KanbanBoard to render TaskCard instead of inline card markup
+- Files changed: app/app/components/TaskCard.tsx (new), app/app/components/KanbanBoard.tsx
+- **Learnings for future iterations:**
+  - STATUS_ORDER array in TaskCard defines column order: ["TODO", "IN_PROGRESS", "DONE"]
+  - onEdit/onDelete/onMove are passed as props to TaskCard — KanbanBoard owns the store and passes down handlers
+  - Manual browser verification needed (dev-browser unavailable)
+---
+
 ## 2026-03-23 - US-002
 - Created Task TypeScript type in app/app/types/task.ts (id, title, description?, priority, status, createdAt)
 - Created useTaskStore custom hook in app/app/hooks/useTaskStore.ts with localStorage persistence
